@@ -35,7 +35,7 @@ def build_wurst(wurst_directory):
     # Locate the jar >:[]
     compiled_jars_dir = os.path.join(
         os.path.join(
-            wurst_directory
+            wurst_directory,
             'build/libs/'
         )
     )
@@ -45,36 +45,38 @@ def build_wurst(wurst_directory):
     for filename in compiled_jars:
         if '-dev' not in filename and '-sources' not in filename:
             wurst_jar_path = os.path.join(
-                wurst_directory, filename
+                compiled_jars_dir, filename
             )
 
     return wurst_jar_path
 
 
 if __name__ == '__main__':
+    # Platform Specific Runtime Environment Vars
+    #tmp_dir = Path("/tmp" if platform.system() == "Darwin" else tempfile.gettempdir())
+    tmp_dir = tempfile.gettempdir()
+    starting_directory = os.getcwd()
+    wurst_directory = os.path.join(tmp_dir, WURST_REPO.split('/')[-1])
+
+    # Clear landing pad XD
     try:
-        # Platform Specific Runtime Environment Vars
-        tmp_dir = Path("/tmp" if platform.system() == "Darwin" else tempfile.gettempdir())
-        starting_directory = os.getcwd()
-
-        # Clone the repo
-        os.chdir(tmp_dir)
-        git_clone(WURST_REPO)
-        wurst_directory = os.path.join(tmp_dir, WURST_REPO.split('/')[-1])
-        os.chdir(wurst_directory)
-
-        # Compile
-        wurst_jar = build_wurst(wurst_directory, gradlew_file)
+        shutil.rmtree(wurst_directory)
     except:
-        print("Failure when cloning and building from repository.")
+        pass
+
+    # Clone
+    os.chdir(tmp_dir)
+    git_clone(WURST_REPO, tmp_dir, BRANCH)
+
+    # Compile
+    os.chdir(wurst_directory)
+    wurst_jar = build_wurst(wurst_directory)
 
     # Move jar and give output
-    try:
-        jar_destination = os.path.join(os.getcwd(), OUTPUT_JAR_NAME
-        shutil.move(wurst_jar, jar_destination))
-        print(f"The compiled wurst7.jar is at {jar_destination}")
-    except:
-        print(f"Moving compiled {OUTPUT_JAR_NAME} failed.")
+    jar_destination = os.path.join(starting_directory, OUTPUT_JAR_NAME)
+    shutil.move(wurst_jar, jar_destination)
+    print(f"The compiled wurst7.jar is at {jar_destination}")
 
-    # Clean up
+    # Clean up and reset cwd
     shutil.rmtree(wurst_directory)
+    os.chdir(starting_directory)
