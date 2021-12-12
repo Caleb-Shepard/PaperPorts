@@ -7,8 +7,9 @@ import os
 
 # Assumed constants - here to make updates simple and keep it readable
 OUTPUT_JAR_NAME = 'wurst7.jar'
-WURST_REPO      = 'https://github.com/Wurst-Imperium/Wurst7'
-BRANCH          = 'master'
+REPO_NAME       = 'Wurst7'
+WURST_REPO      = f'https://github.com/Wurst-Imperium/{REPO_NAME}'
+BRANCH          = '1.18'
 
 # Determining the correct output jar is risky and not deterministic :^)
 def build_wurst(wurst_directory):
@@ -17,10 +18,10 @@ def build_wurst(wurst_directory):
     # Adjust instructions and build depending on runtime environment platform
     if platform.system()=='Windows':
         gradlew_file = 'gradlew.bat'
-        gradlew = f'./{os.path.join(wurst_directory, gradlew_file)}'
+        gradlew = f'{os.pathsep}{os.path.join(wurst_directory, gradlew_file)}'
     else:
         gradlew_file = 'gradlew'
-        gradlew = f'sh {os.path.join(wurst_directory, gradlew_file)}'
+        gradlew = f'{os.path.join(wurst_directory, gradlew_file)}'
 
     # Get source dependencies or something idk open a pull request if it matters
     os.system(f"{gradlew} genSources")
@@ -36,7 +37,8 @@ def build_wurst(wurst_directory):
     compiled_jars_dir = os.path.join(
         os.path.join(
             wurst_directory,
-            'build/libs/'
+            'build',
+            'libs'
         )
     )
 
@@ -52,15 +54,13 @@ def build_wurst(wurst_directory):
 
 
 if __name__ == '__main__':
-    # Platform Specific Runtime Environment Vars
-    #tmp_dir = Path("/tmp" if platform.system() == "Darwin" else tempfile.gettempdir())
-    tmp_dir = tempfile.gettempdir()
+    tmp_dir = tempfile.mkdtemp()
     starting_directory = os.getcwd()
-    wurst_directory = os.path.join(tmp_dir, WURST_REPO.split('/')[-1])
+    wurst_directory = os.path.join(tmp_dir, REPO_NAME)
 
     # Clear landing pad XD
     try:
-        shutil.rmtree(wurst_directory)
+        shutil.rmtree(os.path.join(tmp_dir, REPO_NAME))
     except:
         pass
 
@@ -78,5 +78,6 @@ if __name__ == '__main__':
     print(f"The compiled wurst7.jar is at {jar_destination}")
 
     # Clean up and reset cwd
+    os.chdir(os.path.sep)
     shutil.rmtree(wurst_directory)
     os.chdir(starting_directory)
