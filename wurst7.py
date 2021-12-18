@@ -1,15 +1,22 @@
+import sys
+# ! Validate args
+if len(sys.argv) != 2:
+    print('\nIncorrect number of args. Usage: `wurst7.py BRANCH_NAME`')
+    print('Tip: branch names normally correspond to game version. E.G. "1.18" will get the 1.18 branch.\n')
+    exit()
+
+# Assumed constants - here to make updates simple and keep it readable
+REPO_NAME       = 'Wurst7'
+WURST_REPO      = f'https://github.com/Wurst-Imperium/{REPO_NAME}'
+BRANCH          = sys.argv[1]
+OUTPUT_JAR_NAME = f'wurst7-{BRANCH}.jar' 
+
 from git_clone import git_clone
 from pathlib import Path
 import platform
 import tempfile
 import shutil
 import os
-
-# Assumed constants - here to make updates simple and keep it readable
-OUTPUT_JAR_NAME = 'wurst7.jar'
-REPO_NAME       = 'Wurst7'
-WURST_REPO      = f'https://github.com/Wurst-Imperium/{REPO_NAME}'
-BRANCH          = '1.18'
 
 # Determining the correct output jar is risky and not deterministic :^)
 def build_wurst(wurst_directory):
@@ -54,6 +61,9 @@ def build_wurst(wurst_directory):
 
 
 if __name__ == '__main__':
+
+    # Platform Specific Runtime Environment Vars
+    #tmp_dir = Path("/tmp") if platform.system() == "Darwin" else tempfile.gettempdir())
     tmp_dir = tempfile.mkdtemp()
     starting_directory = os.getcwd()
     wurst_directory = os.path.join(tmp_dir, REPO_NAME)
@@ -75,9 +85,18 @@ if __name__ == '__main__':
     # Move jar and give output
     jar_destination = os.path.join(starting_directory, OUTPUT_JAR_NAME)
     shutil.move(wurst_jar, jar_destination)
-    print(f"The compiled wurst7.jar is at {jar_destination}")
+    print(f"\nThe compiled wurst7.jar is at {jar_destination}")
 
     # Clean up and reset cwd
     os.chdir(os.path.sep)
     shutil.rmtree(wurst_directory)
     os.chdir(starting_directory)
+
+    print('\n-------------------- Additional Mods -------------------------------------\n')
+    print('Fabric API Releases:   https://github.com/FabricMC/fabric/releases')
+    print('Sodium Fabric:         https://github.com/CaffeineMC/sodium-fabric/releases')
+    print('Iris Shaders:          https://irisshaders.net/download.html')
+
+    print('\n------------------   Resource Packs -------------------------------------\n')
+    print('BetterVanillaBuilding: https://www.curseforge.com/minecraft/texture-packs/bettervanillabuilding/files')
+    print('Bare Bones:            https://www.curseforge.com/minecraft/texture-packs/bare-bones-texture-pack/files')
