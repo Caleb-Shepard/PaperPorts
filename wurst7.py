@@ -1,9 +1,22 @@
 import sys
+import subprocess
+
 # ! Validate args
 if len(sys.argv) != 2:
     print('\nIncorrect number of args. Usage: `wurst7.py BRANCH_NAME`')
     print('Tip: branch names normally correspond to game version. E.G. "1.18" will get the 1.18 branch.\n')
     exit()
+
+# ! install prereqs
+subprocess.check_call(
+    [
+        sys.executable,
+        '-m',
+        'pip',
+        'install',
+        'git_clone'
+    ]
+)
 
 # Assumed constants - here to make updates simple and keep it readable
 REPO_NAME       = 'Wurst7'
