@@ -4,7 +4,7 @@ import subprocess
 # ! Validate args
 if len(sys.argv) != 2:
     print('\nIncorrect number of args. Usage: `wurst7.py BRANCH_NAME`')
-    print('Tip: branch names normally correspond to game version. E.G. "1.18" will get the 1.18 branch.\n')
+    print('Active branches are available at this link: https://github.com/Wurst-Imperium/Wurst7/branches/active')
     exit()
 
 # ! install prereqs
@@ -17,6 +17,8 @@ subprocess.check_call(
         'git_clone'
     ]
 )
+# ! if this has to be installed, the script breaks, need update
+# ! from git_clone import git_clone will fail
 
 # Assumed constants - here to make updates simple and keep it readable
 REPO_NAME       = 'Wurst7'
@@ -42,15 +44,16 @@ def build_wurst(wurst_directory):
     else:
         gradlew_file = 'gradlew'
         gradlew = f'{os.path.join(wurst_directory, gradlew_file)}'
+        os.system(f'chmod +x {gradlew}')
 
     # Get source dependencies or something idk open a pull request if it matters
-    os.system(f"{gradlew} genSources")
 
     # Optional line for eclipse users below. If activated, modify to keep the script
     # from deleting Wurst7/ from tmp; copy or move to a permanent directory.
     # os.system(f"{gradlew} eclipse")
 
     # Build the project
+    print(f"{gradlew} build")
     os.system(f"{gradlew} build")
 
     # Locate the jar >:[]
